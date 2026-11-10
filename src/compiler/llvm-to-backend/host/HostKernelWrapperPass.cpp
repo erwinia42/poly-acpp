@@ -64,7 +64,8 @@ void replaceUsesOfGVWith(llvm::Function &F, llvm::StringRef GlobalVarName, llvm:
  * struct and the user arguments need to be passed to the wrapper.
  */
 llvm::Function *makeWrapperFunction(llvm::Function &F, std::int64_t DynamicLocalMemSize,
-                                    const std::array<int, 3> &KnownWgSize) {
+                                    const std::array<int, 3> &KnownWgSize,
+                                    const std::array<std::uint64_t, 3> &KnownNumGroups) {
   auto M = F.getParent();
   auto &Ctx = M->getContext();
 
@@ -97,6 +98,18 @@ llvm::Function *makeWrapperFunction(llvm::Function &F, std::int64_t DynamicLocal
   auto Wrapper = llvm::cast<llvm::Function>(
       M->getOrInsertFunction(FName, WrapperT, FnAttrs).getCallee());
   Wrapper->setLinkage(llvm::GlobalValue::LinkageTypes::ExternalLinkage);
+
+  // Preserve launch-specific grid bounds for downstream group exposure. Keep
+  // the runtime context loads below so the exposure pass can build its guards.
+  if (std::all_of(KnownNumGroups.begin(), KnownNumGroups.end(),
+                  [](std::uint64_t Count) { return Count > 0; })) {
+    llvm::Metadata *Counts[] = {
+        llvm::ConstantAsMetadata::get(Bld.getInt64(KnownNumGroups[0])),
+        llvm::ConstantAsMetadata::get(Bld.getInt64(KnownNumGroups[1])),
+        llvm::ConstantAsMetadata::get(Bld.getInt64(KnownNumGroups[2]))};
+    Wrapper->setMetadata("acpp.num_groups", llvm::MDNode::get(Ctx, Counts));
+  }
+
 #ifdef _WIN32
   Wrapper->setDLLStorageClass(llvm::GlobalValue::DLLStorageClassTypes::DLLExportStorageClass);
 #endif
@@ -198,7 +211,7 @@ llvm::PreservedAnalyses HostKernelWrapperPass::run(llvm::Function &F,
   if (!SAA || !SAA->isKernelFunc(&F))
     return llvm::PreservedAnalyses::all();
 
-  auto Wrapper = makeWrapperFunction(F, DynamicLocalMemSize, KnownWgSize);
+  auto Wrapper = makeWrapperFunction(F, DynamicLocalMemSize, KnownWgSize, KnownNumGroups);
 
   HIPSYCL_DEBUG_INFO << PassPrefix << "Created kernel wrapper: " << Wrapper->getName() << "\n";
 

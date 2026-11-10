@@ -58,7 +58,12 @@ enum class kernel_build_option : int {
 
   host_vector_math_library,
 
-  metal_max_args_for_flat_mode
+  metal_max_args_for_flat_mode,
+
+  // Append new options to preserve existing option IDs used in cache keys.
+  known_num_groups_x,
+  known_num_groups_y,
+  known_num_groups_z
 };
 
 enum class kernel_build_flag : int {

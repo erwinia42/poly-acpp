@@ -248,7 +248,8 @@ bool LLVMToHostTranslator::translateToBackendFormat(llvm::Module &FlavoredModule
 
     llvm::FunctionPassManager FPM;
     FPM.addPass(HostKernelWrapperPass{KnownLocalMemSize, KnownGroupSizeX, KnownGroupSizeY,
-                                      KnownGroupSizeZ});
+                                      KnownGroupSizeZ, KnownNumGroupsX, KnownNumGroupsY,
+                                      KnownNumGroupsZ});
     MPM.addPass(llvm::createModuleToFunctionPassAdaptor(std::move(FPM)));
 
     MPM.run(FlavoredModule, MAM);

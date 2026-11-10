@@ -201,6 +201,16 @@ bool LLVMToBackendTranslator::setBuildOption(const std::string &Option, const st
   } else if (Option == "known-group-size-z") {
     KnownGroupSizeZ = std::stoi(Value);
     return true;
+  // joelande: Hard-code group nums into the JIT binary
+  } else if (Option == "known-num-groups-x") {
+    KnownNumGroupsX = std::stoull(Value);
+    return true;
+  } else if (Option == "known-num-groups-y") {
+    KnownNumGroupsY = std::stoull(Value);
+    return true;
+  } else if (Option == "known-num-groups-z") {
+    KnownNumGroupsZ = std::stoull(Value);
+    return true;
   } else if (Option == "known-local-mem-size") {
     KnownLocalMemSize = std::stoi(Value);
   } else if (Option == "desired-subgroup-size") {

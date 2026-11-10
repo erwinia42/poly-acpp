@@ -21,6 +21,10 @@ public:
       {"known-group-size-x", kernel_build_option::known_group_size_x},
       {"known-group-size-y", kernel_build_option::known_group_size_y},
       {"known-group-size-z", kernel_build_option::known_group_size_z},
+      //joelande: Hard-code group nums into the JIT binary
+      {"known-num-groups-x", kernel_build_option::known_num_groups_x},
+      {"known-num-groups-y", kernel_build_option::known_num_groups_y},
+      {"known-num-groups-z", kernel_build_option::known_num_groups_z},
       {"known-local-mem-size", kernel_build_option::known_local_mem_size},
       {"desired-subgroup-size", kernel_build_option::desired_subgroup_size},
       {"ptx-version", kernel_build_option::ptx_version},

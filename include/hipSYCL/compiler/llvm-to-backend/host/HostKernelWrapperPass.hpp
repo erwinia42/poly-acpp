@@ -11,6 +11,8 @@
 #ifndef HIPSYCL_HOST_WRAPPER_PASS_HPP
 #define HIPSYCL_HOST_WRAPPER_PASS_HPP
 
+#include <array>
+#include <cstdint>
 #include <llvm/IR/PassManager.h>
 
 namespace hipsycl {
@@ -19,12 +21,16 @@ namespace compiler {
 class HostKernelWrapperPass : public llvm::PassInfoMixin<HostKernelWrapperPass> {
   std::int64_t DynamicLocalMemSize;
   std::array<int, 3> KnownWgSize;
+  std::array<std::uint64_t, 3> KnownNumGroups;
 
 public:
   explicit HostKernelWrapperPass(std::int64_t DynamicLocalMemSize, int KnownGroupSizeX,
-                                 int KnownGroupSizeY, int KnownGroupSizeZ)
+                                 int KnownGroupSizeY, int KnownGroupSizeZ,
+                                 std::uint64_t KnownNumGroupsX, std::uint64_t KnownNumGroupsY,
+                                 std::uint64_t KnownNumGroupsZ)
       : DynamicLocalMemSize{DynamicLocalMemSize},
-        KnownWgSize{KnownGroupSizeX, KnownGroupSizeY, KnownGroupSizeZ} {}
+        KnownWgSize{KnownGroupSizeX, KnownGroupSizeY, KnownGroupSizeZ},
+        KnownNumGroups{KnownNumGroupsX, KnownNumGroupsY, KnownNumGroupsZ} {}
 
   llvm::PreservedAnalyses run(llvm::Function &F, llvm::FunctionAnalysisManager &AM);
   static bool isRequired() { return true; }

@@ -20,6 +20,7 @@
 // Note: This file should not include any LLVM headers or include
 // dependencies that rely on LLVM headers in order to not spill
 // LLVM code into the hipSYCL runtime.
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <type_traits>
@@ -216,6 +217,10 @@ protected:
   int KnownGroupSizeX = 0;
   int KnownGroupSizeY = 0;
   int KnownGroupSizeZ = 0;
+  // joelande: Hard-code group nums into the JIT binary
+  std::uint64_t KnownNumGroupsX = 0;
+  std::uint64_t KnownNumGroupsY = 0;
+  std::uint64_t KnownNumGroupsZ = 0;
 
   // Will be >= 0 if set by option. Backends using this should therefore check >= 0.
   std::int64_t KnownLocalMemSize = -1;

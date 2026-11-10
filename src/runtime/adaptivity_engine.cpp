@@ -227,6 +227,14 @@ kernel_adaptivity_engine::finalize_binary_configuration(
     config.set_build_option(kernel_build_option::known_group_size_z,
                             _block_size[2]);
 
+    // joelande: Hard-code group nums into the JIT binary
+    config.set_build_option(kernel_build_option::known_num_groups_x,
+                            _num_groups[0]);
+    config.set_build_option(kernel_build_option::known_num_groups_y,
+                            _num_groups[1]);
+    config.set_build_option(kernel_build_option::known_num_groups_z,
+                            _num_groups[2]);
+
     // Try to optimize size_t -> i32 for queries if those fit in int
     auto global_size = _num_groups * _block_size;
     auto int_max = std::numeric_limits<int>::max();
